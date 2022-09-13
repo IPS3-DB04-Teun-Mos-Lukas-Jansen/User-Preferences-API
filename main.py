@@ -1,5 +1,3 @@
-from asyncio.windows_events import NULL
-from re import U
 from user import User
 from fastapi import FastAPI  ,HTTPException
 from pymongo import MongoClient
@@ -21,6 +19,7 @@ async def register_user(user: User):
     else:
         id = userdb.insert_one(dict(user))
         return str(id)
+        
 
 @app.get("/api/v1/user/{userid}")
 async def get_user_by_id(userid:str):
