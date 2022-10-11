@@ -16,6 +16,14 @@ urldb = db.urlcards_collection
 
 router = APIRouter()
 
+#Get layout by userId 
+@router.get("/{cardId}")
+async def GetCard(cardId:str):
+    card = urldb.find_one({"cardId": cardId })
+    
+    return json.loads(dumps(card))
+
+
 #Add urlcard
 @router.post("")
 async def AddUrlCard():
