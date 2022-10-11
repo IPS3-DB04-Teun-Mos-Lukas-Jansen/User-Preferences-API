@@ -5,5 +5,8 @@ This is the user preferences API for our [dashboard project](https://github.com/
 ## What is the User-Preferences-API
 The User-Preferences-API is a microservice for our dashboard project. The User-Preferences-API is responsible for saving information such as preferences, themes, and dashboard-shortcut-urls.
 
+## Documentation
+[Link](https://github.com/IPS3-DB04-Teun-Mos-Lukas-Jansen/Documentation/wiki/Documentation-User-Preferences-API)
+
 ## License
 [MIT](https://github.com/IPS3-DB04-Teun-Mos-Lukas-Jansen/User-Preferences-API/blob/main/LICENSE.md)
