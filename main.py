@@ -1,12 +1,10 @@
+import imp
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from routers import urls
-
-
-from models.UrlModels import UrlList, Url
-
 from fastapi import FastAPI  ,HTTPException
+
+from routers import layout, urlCards
 
 
 app = FastAPI()
@@ -24,10 +22,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-app.include_router(urls.router)
-
-
-
-        
+app.include_router(layout.router, prefix="/api/v1/layout")
+app.include_router(urlCards.router, prefix="/api/v1/urlcard")
 
