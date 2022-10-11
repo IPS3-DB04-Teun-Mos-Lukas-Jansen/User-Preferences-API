@@ -1,47 +1,33 @@
-from tkinter.tix import COLUMN
 from typing import List
-from unittest import result
 import uuid
 from models.LayoutModels import Layout, Collumn, Card
-from fastapi import APIRouter  ,HTTPException
-
+from fastapi import APIRouter
+import json
 from bson.json_util import dumps
-
 from pymongo import MongoClient
 
 client = MongoClient('mongodb://localhost:27017/')
 db = client.layout
 layoutdb = db.layout_collection
 
-
 router = APIRouter()
 
-# # # # # # # # # # #Create layout
-# # # # # # # # # # @router.post("/api/v1/layout/{UserId}")
-# # # # # # # # # # async def CreateLayout(UserId:str, collumnsAmount:int):
-
-# # # # # # # # # #     card = Card(cardId=1,cardType=2)
-# # # # # # # # # #     collumn = Collumn(cards=[card])
-# # # # # # # # # #     collumnList = [collumn] * collumnsAmount
-# # # # # # # # # #     print(collumn)
-# # # # # # # # # #     layoutObject = Layout(userId=UserId, collumns=collumnList)
-# # # # # # # # # #     layoutObjectDict = dict(layoutObject)
-# # # # # # # # # #     #layoutdb.insert_one(dict(layoutObject))
-
-
-    
-
-
 #Get layout by userId 
-
-
-#Add Column
+@router.get("/{UserId}")
+async def GetLayout(UserId:str):
+    layout = layoutdb.find_one({"userId": UserId })
+    
+    return json.loads(dumps(layout))
 
 #Remove Column
-
+@router.delete("/column/{UserId}")
+async def RemoveColumn(UserId:str, collumnNumber:int):
+    rows = layoutdb.update_one({"userId": UserId}, {'$unset':{'columns.' + str(collumnNumber): 1 }})
+    
+    return str(rows.modified_count)
 
 #add card to column
-@router.post("/api/v1/layout/card/{UserId}")
+@router.post("/card/{UserId}")
 async def AddCard(UserId:str, collumnNumber:int, type: str):
 
     id = str(uuid.uuid4())
@@ -49,7 +35,7 @@ async def AddCard(UserId:str, collumnNumber:int, type: str):
     return str(rows.modified_count); 
 
 #remove card from column
-@router.delete("/api/v1/layout/card/{UserId}")
+@router.delete("/card/{UserId}")
 async def RemoveCard(UserId:str, collumnNumber:int, cardId:str):
         rows = layoutdb.update_one({"userId": UserId } ,{'$pull': {'columns.'+ str(collumnNumber)+'.cards': { "cardId" : cardId} } } )
         return str(rows.modified_count)

@@ -11,4 +11,4 @@ class Url(BaseModel):
 
 class UrlCard(BaseModel):
     cardId: str
-    Urls: List[Url]
+    Urls: Optional[List[Url]]
