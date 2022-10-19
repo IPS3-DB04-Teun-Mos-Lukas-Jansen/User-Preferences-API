@@ -10,3 +10,5 @@ The User-Preferences-API is a microservice for our dashboard project. The User-P
 
 ## License
 [MIT](https://github.com/IPS3-DB04-Teun-Mos-Lukas-Jansen/User-Preferences-API/blob/main/LICENSE.md)
+
+test
