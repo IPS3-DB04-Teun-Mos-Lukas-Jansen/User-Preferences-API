@@ -5,8 +5,12 @@ from fastapi import APIRouter
 import json
 from bson.json_util import dumps
 from pymongo import MongoClient
+import os
 
-client = MongoClient('mongodb://localhost:27017/')
+
+DB_URL = os.environ.get('USER_PREF_DB_URL')
+
+client = MongoClient(DB_URL)
 db = client.layout
 layoutdb = db.layout_collection
 

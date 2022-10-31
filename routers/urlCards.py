@@ -8,8 +8,11 @@ from bson.json_util import dumps
 from pymongo import MongoClient
 
 from models.UrlModels import UrlCard
+import os
 
-client = MongoClient('mongodb://localhost:27017/')
+DB_URL = os.environ.get('USER_PREF_DB_URL')
+
+client = MongoClient(DB_URL)
 db = client.urlcards
 urldb = db.urlcards_collection
 
