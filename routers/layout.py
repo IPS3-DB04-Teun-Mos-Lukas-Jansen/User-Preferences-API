@@ -17,29 +17,27 @@ layoutdb = db.layout_collection
 router = APIRouter()
 
 #Get layout by userId 
-@router.get("/{UserId}")
-async def GetLayout(UserId:str):
-    layout = layoutdb.find_one({"userId": UserId })
+@router.get("/{userId}")
+async def GetLayout(userId:str):
+    layout = layoutdb.find_one({"userId": userId })
     
     return json.loads(dumps(layout))
 
 #Remove Column
-@router.delete("/column/{UserId}")
-async def RemoveColumn(UserId:str, collumnNumber:int):
-    rows = layoutdb.update_one({"userId": UserId}, {'$unset':{'columns.' + str(collumnNumber): 1 }})
+@router.delete("/column/{userId}")
+async def RemoveColumn(userId:str, columnNumber:int):
+    rows = layoutdb.update_one({"userId": userId}, {'$unset':{'columns.' + str(columnNumber): 1 }})
     
     return str(rows.modified_count)
 
 #add card to column
-@router.post("/card/{UserId}")
-async def AddCard(UserId:str, collumnNumber:int, type: str):
-
-    id = str(uuid.uuid4())
-    rows = layoutdb.update_one({"userId": UserId } ,{'$push': {'columns.'+ str(collumnNumber)+'.cards': dict(Card(cardId= id, cardType=type))}}, upsert = True )
+@router.post("/card/{userId}")
+async def AddCard(userId:str, columnNumber:int, cardId:str, type: str):
+    rows = layoutdb.update_one({"userId": userId } ,{'$push': {'columns.'+ str(columnNumber)+'.cards': dict(Card(cardId= cardId, cardType=type))}}, upsert = True )
     return str(rows.modified_count); 
 
 #remove card from column
-@router.delete("/card/{UserId}")
-async def RemoveCard(UserId:str, collumnNumber:int, cardId:str):
-        rows = layoutdb.update_one({"userId": UserId } ,{'$pull': {'columns.'+ str(collumnNumber)+'.cards': { "cardId" : cardId} } } )
+@router.delete("/card/{userId}")
+async def RemoveCard(userId:str, columnNumber:int, cardId:str):
+        rows = layoutdb.update_one({"userId": userId } ,{'$pull': {'columns.'+ str(columnNumber)+'.cards': { "cardId" : cardId} } } )
         return str(rows.modified_count)
