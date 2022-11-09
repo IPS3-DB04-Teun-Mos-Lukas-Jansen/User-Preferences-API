@@ -129,7 +129,7 @@ async def test_UpdateUrlInCard_updates_url_in_card_in_db():
     assert urlcardBefore != urlcardAfter
     assert urlcardBefore["Urls"][0]["Url"] == urlobject.Url
     assert urlcardAfter["Urls"][0]["Url"] == newUrl
-
+    assert 0 == 1
 
 
 
