@@ -12,7 +12,9 @@ DB_URL = os.environ.get('USER_PREF_DB_URL')
 
 client = MongoClient(DB_URL)
 db = client.layout
+
 layoutdb = db.layout_collection
+
 
 router = APIRouter()
 
