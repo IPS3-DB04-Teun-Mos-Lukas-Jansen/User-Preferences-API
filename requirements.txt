@@ -2,3 +2,5 @@ fastapi==0.83.0
 pydantic==1.10.2
 pymongo==4.2.0
 uvicorn[standard]
+mongomock[standard]
+pytest[standard]
