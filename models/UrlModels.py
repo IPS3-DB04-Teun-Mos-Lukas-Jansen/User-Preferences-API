@@ -6,9 +6,9 @@ from typing import List
 
 
 class Url(BaseModel):
-    UrlId: str
-    Url: str
+    urlId: str
+    url: str
 
 class UrlCard(BaseModel):
     cardId: str
-    Urls: Optional[List[Url]]
+    urls: Optional[List[Url]]

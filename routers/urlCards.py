@@ -20,47 +20,46 @@ urldb = db.urlcards_collection
 router = APIRouter()
 
 #Get layout by userId 
-@router.get("/{cardId}")
-async def GetCard(cardId:str):
-    card = urldb.find_one({"cardId": cardId })
+@router.get("/{card_id}")
+async def get_card(card_id:str):
+    card = urldb.find_one({"cardId": card_id })
     
     return json.loads(dumps(card))
 
 
 #Add urlcard
 @router.post("")
-async def AddUrlCard():
+async def add_url_card():
     id = str(uuid.uuid4())
-    urlcard = UrlCard(cardId=id, Urls=[])
-    urldb.insert_one(dict(urlcard))
+    url_card = UrlCard(cardId=id, urls=[])
+    urldb.insert_one(dict(url_card))
     return id
     
 
 #remove urlcard
-@router.delete("/{cardId}")
-async def RemoveUrlCard(cardId: str):
-    rows = urldb.delete_one({"cardId": cardId})
+@router.delete("/{card_id}")
+async def remove_url_card(card_id: str):
+    rows = urldb.delete_one({"cardId": card_id})
     return str(rows.deleted_count)
 
 #add url to card
-@router.post("/{cardId}/url")
-async def AddUrlToCard(cardId:str, url:str):
+@router.post("/{card_id}/url")
+async def add_url_to_card(card_id:str, url:str):
     id = str(uuid.uuid4())
-    urlobject = Url(UrlId=id, Url=url)
-    urldb.update_one({"cardId": cardId}, {"$push":{"Urls":dict(urlobject)} })
+    url_object = Url(urlId=id, url=url)
+    urldb.update_one({"cardId": card_id}, {"$push":{'urls':dict(url_object)} })
     return id
 
-
 #remove url from card
-@router.delete("/{cardId}/url")
-async def RemoveUrlFromCard(cardId:str, urlId: str):
-    rows = urldb.update_one({"cardId": cardId } ,{'$pull': {'Urls': { "UrlId" : urlId} } } )
+@router.delete("/{card_id}/url")
+async def remove_url_from_card(card_id:str, url_id: str):
+    rows = urldb.update_one({"cardId": card_id } ,{'$pull': {'urls': { 'urlId' : url_id} } } )
     return str(rows.modified_count)
 
 #update url in card
-@router.put("/{cardId}/url")
-async def UpdateUrlInCard(cardId:str, urlId: str, newUrl: str):
-    urlObject = Url( UrlId = urlId , Url = newUrl)
-    id = urldb.update_one({"cardId": cardId, "Urls.UrlId" : urlObject.UrlId} ,{'$set': {'Urls.$':  dict(urlObject) } } )
+@router.put("/{card_id}/url")
+async def update_url_in_card(card_id:str, url_id: str, new_url: str):
+    url_object = Url( urlId = url_id , url = new_url)
+    id = urldb.update_one({"cardId": card_id, "urls.urlId" : url_object.urlId} ,{'$set': {'urls.$':  dict(url_object) } } )
     return str(id.modified_count)
 
