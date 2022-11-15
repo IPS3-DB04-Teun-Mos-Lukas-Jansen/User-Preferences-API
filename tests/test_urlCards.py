@@ -11,7 +11,7 @@ def createMockDB():
 
 
 @pytest.mark.asyncio
-async def test_GetCard_returns_CorrectCard():
+async def test_get_card_returns_correct_card():
 
     #arrange
     createMockDB()
@@ -19,12 +19,12 @@ async def test_GetCard_returns_CorrectCard():
     collection_mock.insert_one(dict(urlcard))
 
     #act
-    result = await urlCards.GetCard(urlcard.cardId)
+    result = await urlCards.get_card(urlcard.cardId)
     
     #assert
     assert result != None
     assert urlcard.cardId == result["cardId"]
-    assert urlcard.Urls == result["Urls"]
+    assert urlcard.urls == result["urls"]
 
 @pytest.mark.asyncio
 async def test_AddUrlCard_Adds_card_to_db():
@@ -33,7 +33,7 @@ async def test_AddUrlCard_Adds_card_to_db():
     createMockDB()
 
     #act
-    id = await urlCards.AddUrlCard()
+    id = await urlCards.add_url_card()
     result = collection_mock.find_one({"cardId": id })
 
     #assert
@@ -44,91 +44,91 @@ async def test_AddUrlCard_Adds_card_to_db():
 async def test_RemoveUrlCard_Removes_card_from_db():
     #arrange
     createMockDB()
-    urlcard = UrlCard(cardId=str(uuid.uuid4()), Urls=[])
-    collection_mock.insert_one(dict(urlcard))
+    url_card = UrlCard(cardId=str(uuid.uuid4()), urls=[])
+    collection_mock.insert_one(dict(url_card))
 
     #act
-    preResult = collection_mock.find_one({"cardId": urlcard.cardId })
-    rows = await urlCards.RemoveUrlCard(urlcard.cardId)
-    result = collection_mock.find_one({"cardId": urlcard.cardId })
+    pre_result = collection_mock.find_one({"cardId": url_card.cardId })
+    rows = await urlCards.remove_url_card(url_card.cardId)
+    result = collection_mock.find_one({"cardId": url_card.cardId })
 
     #assert
-    assert preResult["cardId"] == urlcard.cardId
-    assert preResult != None
+    assert pre_result["cardId"] == url_card.cardId
+    assert pre_result != None
     assert rows == str(1)
     assert result == None
 
 @pytest.mark.asyncio
-async def test_AddUrlToCard_adds_url_to_card_in_db():
+async def test_add_url_to_card_adds_url_to_card_in_db():
     #arrange
     createMockDB()
-    urlcard = UrlCard(cardId=str(uuid.uuid4()), Urls=[])
+    urlcard = UrlCard(cardId=str(uuid.uuid4()), urls=[])
     collection_mock.insert_one(dict(urlcard))
 
     url = "https://kanikeenkortebroekaan.nl/"
 
     #act
-    urlId = await urlCards.AddUrlToCard(urlcard.cardId, url)
-    urlId2 = await urlCards.AddUrlToCard(urlcard.cardId, url)
+    url_id = await urlCards.add_url_to_card(urlcard.cardId, url)
+    url_id2 = await urlCards.add_url_to_card(urlcard.cardId, url)
 
-    urlcardAfter = collection_mock.find_one({"cardId": urlcard.cardId })
+    urlcard_after = collection_mock.find_one({"cardId": urlcard.cardId })
     #assert
-    assert urlcardAfter != None
-    assert len(urlcardAfter["Urls"]) == 2
-    assert urlcardAfter["Urls"][0]["Url"] == url
-    assert urlcardAfter["Urls"][0]["UrlId"] == urlId
-    assert urlcardAfter["Urls"][1]["Url"] == url
-    assert urlcardAfter["Urls"][1]["UrlId"] == urlId2
+    assert urlcard_after != None
+    assert len(urlcard_after["urls"]) == 2
+    assert urlcard_after["urls"][0]["url"] == url
+    assert urlcard_after["urls"][0]["urlId"] == url_id
+    assert urlcard_after["urls"][1]["url"] == url
+    assert urlcard_after["urls"][1]["urlId"] == url_id2
 
 @pytest.mark.asyncio
-async def test_RemoveUrlFromCard_removes_url_from_card_in_db():
+async def test_remove_url_from_card_removes_url_from_card_in_db():
     #arrange
     createMockDB()
-    urlcard = UrlCard(cardId=str(uuid.uuid4()), Urls=[])
+    urlcard = UrlCard(cardId=str(uuid.uuid4()), urls=[])
     collection_mock.insert_one(dict(urlcard))
 
-    urlobject = Url(UrlId=str(uuid.uuid4), Url="https://kanikeenkortebroekaan.nl/")
+    urlobject = Url(urlId=str(uuid.uuid4), url="https://kanikeenkortebroekaan.nl/")
     
-    collection_mock.update_one({"cardId": urlcard.cardId}, {"$push":{"Urls":dict(urlobject)} })
+    collection_mock.update_one({"cardId": urlcard.cardId}, {"$push":{"urls":dict(urlobject)} })
 
     #act
 
-    urlcardBefore = collection_mock.find_one({"cardId": urlcard.cardId })
-    rows = await urlCards.RemoveUrlFromCard(urlcard.cardId, urlobject.UrlId)
-    urlcardAfter = collection_mock.find_one({"cardId": urlcard.cardId })
+    urlcard_before = collection_mock.find_one({"cardId": urlcard.cardId })
+    rows = await urlCards.remove_url_from_card(urlcard.cardId, urlobject.urlId)
+    urlcard_after = collection_mock.find_one({"cardId": urlcard.cardId })
 
     #assert
-    assert urlcardAfter != None
+    assert urlcard_after != None
     assert rows == str(1)
-    assert len(urlcardAfter["Urls"]) == 0
-    assert len(urlcardBefore["Urls"]) == 1
+    assert len(urlcard_after["urls"]) == 0
+    assert len(urlcard_before["urls"]) == 1
 
 @pytest.mark.asyncio
-async def test_UpdateUrlInCard_updates_url_in_card_in_db():
+async def test_update_url_in_card_updates_url_in_card_in_db():
     #arrange
     createMockDB()
-    urlcard = UrlCard(cardId=str(uuid.uuid4()), Urls=[])
+    urlcard = UrlCard(cardId=str(uuid.uuid4()), urls=[])
     collection_mock.insert_one(dict(urlcard))
 
-    urlobject = Url(UrlId=str(uuid.uuid4), Url="https://kanikeenkortebroekaan.nl/")
+    urlobject = Url(urlId=str(uuid.uuid4), url="https://kanikeenkortebroekaan.nl/")
     
-    collection_mock.update_one({"cardId": urlcard.cardId}, {"$push":{"Urls":dict(urlobject)} })
+    collection_mock.update_one({"cardId": urlcard.cardId}, {"$push":{"urls":dict(urlobject)} })
 
-    newUrl = "https://minecraft.net/"
+    new_url = "https://minecraft.net/"
     #act
 
-    urlcardBefore = collection_mock.find_one({"cardId": urlcard.cardId })
-    rows = await urlCards.UpdateUrlInCard(urlcard.cardId, urlobject.UrlId, newUrl)
-    urlcardAfter = collection_mock.find_one({"cardId": urlcard.cardId })
+    urlcard_before = collection_mock.find_one({"cardId": urlcard.cardId })
+    rows = await urlCards.update_url_in_card(urlcard.cardId, urlobject.urlId, new_url)
+    urlcard_after = collection_mock.find_one({"cardId": urlcard.cardId })
 
     #assert
-    assert urlcardAfter != None
+    assert urlcard_after != None
     assert rows == str(1)
-    assert len(urlcardAfter["Urls"]) == 1
-    assert urlcardAfter["Urls"][0]["UrlId"] ==  urlobject.UrlId
-    assert urlcardBefore != urlcardAfter
-    assert urlcardBefore["Urls"][0]["Url"] == urlobject.Url
-    assert urlcardAfter["Urls"][0]["Url"] == newUrl
+    assert len(urlcard_after["urls"]) == 1
+    assert urlcard_after["urls"][0]["urlId"] ==  urlobject.urlId
+    assert urlcard_before != urlcard_after
+    assert urlcard_before["urls"][0]["url"] == urlobject.url
+    assert urlcard_after["urls"][0]["url"] == new_url
 
 
 
