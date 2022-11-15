@@ -11,82 +11,82 @@ def createMockDB():
 
 
 @pytest.mark.asyncio
-async def test_get_layout_returns_correctlayout():
+async def test_GetLayout_returns_Correctlayout():
     #arrange
     createMockDB()
-    user_id = str(uuid.uuid4()) 
-    column_number = 0
-    card_id = str(uuid.uuid4()) 
+    userId = str(uuid.uuid4()) 
+    columnNumber = 0
+    cardId = str(uuid.uuid4()) 
     type = "url"
 
-    collection_mock.update_one({"userId": user_id } ,{'$push': {'columns.'+ str(column_number)+'.cards': dict(Card(cardId= card_id, cardType=type))}}, upsert = True )
+    collection_mock.update_one({"userId": userId } ,{'$push': {'columns.'+ str(columnNumber)+'.cards': dict(Card(cardId= cardId, cardType=type))}}, upsert = True )
 
     #act
-    result_layout = await layout.get_layout(user_id)
+    resultLayout = await layout.GetLayout(userId)
 
     #assert
-    assert result_layout != None
-    assert result_layout["userId"] == user_id
-    assert result_layout["columns"]["0"]['cards'][0]["cardId"] == card_id
+    assert resultLayout != None
+    assert resultLayout["userId"] == userId
+    assert resultLayout["columns"]["0"]['cards'][0]["cardId"] == cardId
 
 @pytest.mark.asyncio
-async def test_remove_column_removes_column_from_db():
+async def test_RemoveColumn_Removes_column_from_db():
     #arrange
     createMockDB()
-    user_id = str(uuid.uuid4()) 
-    column_number = 0
-    card_id = str(uuid.uuid4()) 
+    userId = str(uuid.uuid4()) 
+    columnNumber = 0
+    cardId = str(uuid.uuid4()) 
     type = "url"
 
-    collection_mock.update_one({"userId": user_id } ,{'$push': {'columns.'+ str(column_number)+'.cards': dict(Card(cardId= card_id, cardType=type))}}, upsert = True )
+    collection_mock.update_one({"userId": userId } ,{'$push': {'columns.'+ str(columnNumber)+'.cards': dict(Card(cardId= cardId, cardType=type))}}, upsert = True )
     
     #act
-    layout_before = collection_mock.find_one({"userId": user_id })
-    rows = await layout.remove_column(user_id, column_number)
-    layout_after = collection_mock.find_one({"userId": user_id })
+    layoutBefore = collection_mock.find_one({"userId": userId })
+    rows = await layout.RemoveColumn(userId, columnNumber)
+    layoutAfter = collection_mock.find_one({"userId": userId })
 
     #assert
-    assert layout_before["columns"]["0"]['cards'][0]["cardId"] == card_id
-    assert layout_after != None
-    assert layout_after["columns"] == {}
+    assert layoutBefore["columns"]["0"]['cards'][0]["cardId"] == cardId
+    assert layoutAfter != None
+    assert layoutAfter["columns"] == {}
     assert rows == str(1)
 
 @pytest.mark.asyncio
-async def test_add_card_adds_card_to_db():
+async def test_AddCard_adds_card_to_db():
     #arrange
     createMockDB()
-    user_id = str(uuid.uuid4()) 
-    column_number = 0
-    card_id = str(uuid.uuid4()) 
+    userId = str(uuid.uuid4()) 
+    columnNumber = 0
+    cardId = str(uuid.uuid4()) 
     type = "url"
 
     #act
-    layout_before = collection_mock.find_one({"userId": user_id })
-    await layout.add_card(user_id, column_number, card_id, type)
-    layout_after = collection_mock.find_one({"userId": user_id })
-
+    layoutBefore = collection_mock.find_one({"userId": userId })
+    await layout.AddCard(userId, columnNumber, cardId, type)
+    layoutAfter = collection_mock.find_one({"userId": userId })
+    
     #assert
-    assert layout_before ==  None
-    assert layout_after["columns"]["0"]['cards'][0]["cardId"] == card_id
-    assert len(layout_after["columns"]["0"]['cards']) == 1
+    assert layoutBefore ==  None
+    assert layoutAfter["columns"]["0"]['cards'][0]["cardId"] == cardId
+    assert len(layoutAfter["columns"]["0"]['cards']) == 1
 
 @pytest.mark.asyncio
-async def test_remove_card_removes_card_from_db():
+async def test_RemoveCard_removes_card_from_db():
     #arrange
     createMockDB()
-    user_id = str(uuid.uuid4()) 
-    column_number = 0
-    card_id = str(uuid.uuid4()) 
+    userId = str(uuid.uuid4()) 
+    columnNumber = 0
+    cardId = str(uuid.uuid4()) 
     type = "url"
 
-    collection_mock.update_one({"userId": user_id } ,{'$push': {'columns.'+ str(column_number)+'.cards': dict(Card(cardId= card_id, cardType=type))}}, upsert = True )
+    collection_mock.update_one({"userId": userId } ,{'$push': {'columns.'+ str(columnNumber)+'.cards': dict(Card(cardId= cardId, cardType=type))}}, upsert = True )
     
     #act
-    layout_before = collection_mock.find_one({"userId": user_id })
-    await layout.remove_card(user_id, column_number, card_id)
-    layout_after = collection_mock.find_one({"userId": user_id })
+    layoutBefore = collection_mock.find_one({"userId": userId })
+    await layout.RemoveCard(userId, columnNumber, cardId)
+    layoutAfter = collection_mock.find_one({"userId": userId })
 
     #assert
-    assert layout_after != None
-    assert layout_before["columns"]["0"]['cards'][0]["cardId"] == card_id
-    assert len(layout_after["columns"]["0"]['cards']) == 0
+    assert layoutAfter != None
+    assert layoutBefore["columns"]["0"]['cards'][0]["cardId"] == cardId
+    assert len(layoutAfter["columns"]["0"]['cards']) == 0
