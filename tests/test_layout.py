@@ -6,20 +6,20 @@ from models.LayoutModels import Layout, Card, Collumn
 
 collection_mock = mongomock.MongoClient().mocklayout_db.mocklayout_collection
 
-def createMockDB():
+def create_mock_db():
     layout.layoutdb = collection_mock
 
 
 @pytest.mark.asyncio
 async def test_get_layout_returns_correctlayout():
     #arrange
-    createMockDB()
+    create_mock_db()
     user_id = str(uuid.uuid4()) 
     column_number = 0
     card_id = str(uuid.uuid4()) 
-    type = "url"
+    card_type = "url"
 
-    collection_mock.update_one({"userId": user_id } ,{'$push': {'columns.'+ str(column_number)+'.cards': dict(Card(cardId= card_id, cardType=type))}}, upsert = True )
+    collection_mock.update_one({"userId": user_id } ,{'$push': {'columns.'+ str(column_number)+'.cards': dict(Card(cardId= card_id, cardType=card_type))}}, upsert = True )
 
     #act
     result_layout = await layout.get_layout(user_id)
@@ -32,13 +32,13 @@ async def test_get_layout_returns_correctlayout():
 @pytest.mark.asyncio
 async def test_remove_column_removes_column_from_db():
     #arrange
-    createMockDB()
+    create_mock_db()
     user_id = str(uuid.uuid4()) 
     column_number = 0
     card_id = str(uuid.uuid4()) 
-    type = "url"
+    card_type = "url"
 
-    collection_mock.update_one({"userId": user_id } ,{'$push': {'columns.'+ str(column_number)+'.cards': dict(Card(cardId= card_id, cardType=type))}}, upsert = True )
+    collection_mock.update_one({"userId": user_id } ,{'$push': {'columns.'+ str(column_number)+'.cards': dict(Card(cardId= card_id, cardType=card_type))}}, upsert = True )
     
     #act
     layout_before = collection_mock.find_one({"userId": user_id })
@@ -54,15 +54,15 @@ async def test_remove_column_removes_column_from_db():
 @pytest.mark.asyncio
 async def test_add_card_adds_card_to_db():
     #arrange
-    createMockDB()
+    create_mock_db()
     user_id = str(uuid.uuid4()) 
     column_number = 0
     card_id = str(uuid.uuid4()) 
-    type = "url"
+    card_type = "url"
 
     #act
     layout_before = collection_mock.find_one({"userId": user_id })
-    await layout.add_card(user_id, column_number, card_id, type)
+    await layout.add_card(user_id, column_number, card_id, card_type)
     layout_after = collection_mock.find_one({"userId": user_id })
 
     #assert
@@ -73,13 +73,13 @@ async def test_add_card_adds_card_to_db():
 @pytest.mark.asyncio
 async def test_remove_card_removes_card_from_db():
     #arrange
-    createMockDB()
+    create_mock_db()
     user_id = str(uuid.uuid4()) 
     column_number = 0
     card_id = str(uuid.uuid4()) 
-    type = "url"
+    card_type = "url"
 
-    collection_mock.update_one({"userId": user_id } ,{'$push': {'columns.'+ str(column_number)+'.cards': dict(Card(cardId= card_id, cardType=type))}}, upsert = True )
+    collection_mock.update_one({"userId": user_id } ,{'$push': {'columns.'+ str(column_number)+'.cards': dict(Card(cardId= card_id, cardType=card_type))}}, upsert = True )
     
     #act
     layout_before = collection_mock.find_one({"userId": user_id })

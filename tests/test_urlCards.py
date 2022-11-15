@@ -6,7 +6,7 @@ from models.UrlModels import UrlCard, Url
 
 collection_mock = mongomock.MongoClient().mockurl_db.mockurl_collection
 
-def createMockDB():
+def create_mock_db():
     urlCards.urldb = collection_mock
 
 
@@ -14,7 +14,7 @@ def createMockDB():
 async def test_get_card_returns_correct_card():
 
     #arrange
-    createMockDB()
+    create_mock_db()
     urlcard = UrlCard(cardId=str(uuid.uuid4()), Urls=[])
     collection_mock.insert_one(dict(urlcard))
 
@@ -27,23 +27,23 @@ async def test_get_card_returns_correct_card():
     assert urlcard.urls == result["urls"]
 
 @pytest.mark.asyncio
-async def test_AddUrlCard_Adds_card_to_db():
+async def test_add_url_card_adds_card_to_db():
 
     #arrange
-    createMockDB()
+    create_mock_db()
 
     #act
-    id = await urlCards.add_url_card()
-    result = collection_mock.find_one({"cardId": id })
+    card_id = await urlCards.add_url_card()
+    result = collection_mock.find_one({"cardId": card_id })
 
     #assert
     assert result != None
-    assert id == result["cardId"]
+    assert card_id == result["cardId"]
 
 @pytest.mark.asyncio
-async def test_RemoveUrlCard_Removes_card_from_db():
+async def test_remove_url_card_removes_card_from_db():
     #arrange
-    createMockDB()
+    create_mock_db()
     url_card = UrlCard(cardId=str(uuid.uuid4()), urls=[])
     collection_mock.insert_one(dict(url_card))
 
@@ -61,7 +61,7 @@ async def test_RemoveUrlCard_Removes_card_from_db():
 @pytest.mark.asyncio
 async def test_add_url_to_card_adds_url_to_card_in_db():
     #arrange
-    createMockDB()
+    create_mock_db()
     urlcard = UrlCard(cardId=str(uuid.uuid4()), urls=[])
     collection_mock.insert_one(dict(urlcard))
 
@@ -83,7 +83,7 @@ async def test_add_url_to_card_adds_url_to_card_in_db():
 @pytest.mark.asyncio
 async def test_remove_url_from_card_removes_url_from_card_in_db():
     #arrange
-    createMockDB()
+    create_mock_db()
     urlcard = UrlCard(cardId=str(uuid.uuid4()), urls=[])
     collection_mock.insert_one(dict(urlcard))
 
@@ -106,7 +106,7 @@ async def test_remove_url_from_card_removes_url_from_card_in_db():
 @pytest.mark.asyncio
 async def test_update_url_in_card_updates_url_in_card_in_db():
     #arrange
-    createMockDB()
+    create_mock_db()
     urlcard = UrlCard(cardId=str(uuid.uuid4()), urls=[])
     collection_mock.insert_one(dict(urlcard))
 
