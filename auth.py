@@ -18,8 +18,7 @@ verified_tokens = []
 def verify_token(token): 
     
     token_obj = is_token_verified(token)
-
-
+    
     if token_obj is None:
         try:
             idinfo = id_token.verify_oauth2_token(token, requests.Request(), CLIENT_ID)

@@ -6,20 +6,28 @@ from models.UrlModels import UrlCard, Url
 
 collection_mock = mongomock.MongoClient().mockurl_db.mockurl_collection
 
-def create_mock_db():
+def mock_init():
     urlCards.urldb = collection_mock
+    
+    def verify_token_mock(token:str):
+        return str(uuid.uuid4())
+    urlCards.verify_token = verify_token_mock
+
+    def verify_urlcard_to_user_mock(token:str, card_id:str):
+        return True
+    urlCards.verify_urlcard_to_user = verify_urlcard_to_user_mock
 
 
 @pytest.mark.asyncio
 async def test_get_card_returns_correct_card():
 
     #arrange
-    create_mock_db()
+    mock_init()
     urlcard = UrlCard(cardId=str(uuid.uuid4()), Urls=[])
     collection_mock.insert_one(dict(urlcard))
 
     #act
-    result = await urlCards.get_card(urlcard.cardId)
+    result = await urlCards.get_card("dummy_token", urlcard.cardId)
     
     #assert
     assert result != None
@@ -30,10 +38,10 @@ async def test_get_card_returns_correct_card():
 async def test_add_url_card_adds_card_to_db():
 
     #arrange
-    create_mock_db()
+    mock_init()
 
     #act
-    card_id = await urlCards.add_url_card()
+    card_id = await urlCards.add_url_card("dummy_token")
     result = collection_mock.find_one({"cardId": card_id })
 
     #assert
@@ -43,13 +51,13 @@ async def test_add_url_card_adds_card_to_db():
 @pytest.mark.asyncio
 async def test_remove_url_card_removes_card_from_db():
     #arrange
-    create_mock_db()
+    mock_init()
     url_card = UrlCard(cardId=str(uuid.uuid4()), urls=[])
     collection_mock.insert_one(dict(url_card))
 
     #act
     pre_result = collection_mock.find_one({"cardId": url_card.cardId })
-    rows = await urlCards.remove_url_card(url_card.cardId)
+    rows = await urlCards.remove_url_card("dummy_token", url_card.cardId)
     result = collection_mock.find_one({"cardId": url_card.cardId })
 
     #assert
@@ -61,15 +69,15 @@ async def test_remove_url_card_removes_card_from_db():
 @pytest.mark.asyncio
 async def test_add_url_to_card_adds_url_to_card_in_db():
     #arrange
-    create_mock_db()
+    mock_init()
     urlcard = UrlCard(cardId=str(uuid.uuid4()), urls=[])
     collection_mock.insert_one(dict(urlcard))
 
     url = "https://kanikeenkortebroekaan.nl/"
 
     #act
-    url_id = await urlCards.add_url_to_card(urlcard.cardId, url)
-    url_id2 = await urlCards.add_url_to_card(urlcard.cardId, url)
+    url_id = await urlCards.add_url_to_card("dummy_token", urlcard.cardId, url)
+    url_id2 = await urlCards.add_url_to_card("dummy_token", urlcard.cardId, url)
 
     urlcard_after = collection_mock.find_one({"cardId": urlcard.cardId })
     #assert
@@ -83,7 +91,7 @@ async def test_add_url_to_card_adds_url_to_card_in_db():
 @pytest.mark.asyncio
 async def test_remove_url_from_card_removes_url_from_card_in_db():
     #arrange
-    create_mock_db()
+    mock_init()
     urlcard = UrlCard(cardId=str(uuid.uuid4()), urls=[])
     collection_mock.insert_one(dict(urlcard))
 
@@ -94,7 +102,7 @@ async def test_remove_url_from_card_removes_url_from_card_in_db():
     #act
 
     urlcard_before = collection_mock.find_one({"cardId": urlcard.cardId })
-    rows = await urlCards.remove_url_from_card(urlcard.cardId, urlobject.urlId)
+    rows = await urlCards.remove_url_from_card("dummy_token", urlcard.cardId, urlobject.urlId)
     urlcard_after = collection_mock.find_one({"cardId": urlcard.cardId })
 
     #assert
@@ -106,7 +114,7 @@ async def test_remove_url_from_card_removes_url_from_card_in_db():
 @pytest.mark.asyncio
 async def test_update_url_in_card_updates_url_in_card_in_db():
     #arrange
-    create_mock_db()
+    mock_init()
     urlcard = UrlCard(cardId=str(uuid.uuid4()), urls=[])
     collection_mock.insert_one(dict(urlcard))
 
@@ -118,7 +126,7 @@ async def test_update_url_in_card_updates_url_in_card_in_db():
     #act
 
     urlcard_before = collection_mock.find_one({"cardId": urlcard.cardId })
-    rows = await urlCards.update_url_in_card(urlcard.cardId, urlobject.urlId, new_url)
+    rows = await urlCards.update_url_in_card("dummy_token", urlcard.cardId, urlobject.urlId, new_url)
     urlcard_after = collection_mock.find_one({"cardId": urlcard.cardId })
 
     #assert
