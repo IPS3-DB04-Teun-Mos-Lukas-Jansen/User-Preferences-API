@@ -62,10 +62,11 @@ def test_verify_token_when_already_exists_should_return_userid():
 
     #act
     result = auth.verify_token(dummy_token)
-    result = auth.verify_token(dummy_token)
+    result2 = auth.verify_token(dummy_token)
 
     #assert
     assert result == user_id
+    assert result2 == user_id
     assert len(auth.verified_tokens) == 1
     assert auth.verified_tokens[0].user_id == user_id
 
@@ -93,17 +94,17 @@ def test_is_token_verified_when_not_exists_should_return_none():
     user_id = str(uuid.uuid4()) 
     mock_init(user_id)
     dummy_token = "dummy_token"
-    dummy_token = "dummy_token2"
+    dummy_token2 = "dummy_token2"
     dummy_token2_date = datetime.now()
 
-    dummy_token2_obj = verified_token(id_token=dummy_token, verified_date_time=dummy_token2_date, user_id=user_id)
+    dummy_token2_obj = verified_token(id_token=dummy_token2, verified_date_time=dummy_token2_date, user_id=user_id)
     auth.verified_tokens.append(dummy_token2_obj)
 
     #act
     result = auth.is_token_verified(dummy_token)
 
     #assert
-    result == None
+    assert result == None
 
 def test_remove_expired_tokens_should_only_remove_expired_tokens():
     #arrange
