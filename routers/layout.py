@@ -51,5 +51,20 @@ async def remove_card(token:str, column_number:int, card_id:str):
     return str(rows.modified_count)
 
 
+#remove cards of specific type from all columns
+@router.delete("/card/type/{token}")
+async def remove_cards_of_type(token:str, type:str):
+    user_id = verify_token(token)
+
+    #get all columns
+    layout = await get_layout(token)
+    columns = layout['columns']
+
+    #remove cards of specific type from all columns
+    for column in columns: #this can be done in one query but I don't know how :(
+        rows = layoutdb.update_one({"userId": user_id } ,{'$pull': {'columns.'+ str(column)+'.cards': { "cardType" : type} } } )
+    
+    return str(rows.modified_count)
+
 
 
