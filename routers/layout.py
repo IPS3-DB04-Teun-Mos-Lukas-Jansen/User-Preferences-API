@@ -43,6 +43,13 @@ async def add_card(token:str, column_number:int, card_id:str, type: str, params:
     rows = layoutdb.update_one({"userId": user_id } ,{'$push': {'columns.'+ str(column_number)+'.cards': dict(Card(cardId= card_id, cardType=type, params=params))}}, upsert = True )
     return str(rows.modified_count); 
 
+#update card params in column
+@router.put("/card/{token}")
+async def update_card(token:str, column_number:int, card_id:str, params: dict = {}):
+    user_id = verify_token(token)
+    rows = layoutdb.update_one({"userId": user_id } ,{'$set': {'columns.'+ str(column_number)+'.cards.$[elem].params': params }}, array_filters=[{"elem.cardId": card_id}] )
+    return str(rows.modified_count)
+
 #remove card from column
 @router.delete("/card/{token}")
 async def remove_card(token:str, column_number:int, card_id:str):
