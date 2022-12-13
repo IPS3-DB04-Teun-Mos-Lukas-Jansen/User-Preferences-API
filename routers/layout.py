@@ -38,9 +38,9 @@ async def remove_column(token:str, column_number:int):
 
 #add card to column
 @router.post("/card/{token}")
-async def add_card(token:str, column_number:int, card_id:str, type: str):
+async def add_card(token:str, column_number:int, card_id:str, type: str, params: dict):
     user_id = verify_token(token)
-    rows = layoutdb.update_one({"userId": user_id } ,{'$push': {'columns.'+ str(column_number)+'.cards': dict(Card(cardId= card_id, cardType=type))}}, upsert = True )
+    rows = layoutdb.update_one({"userId": user_id } ,{'$push': {'columns.'+ str(column_number)+'.cards': dict(Card(cardId= card_id, cardType=type, params=params))}}, upsert = True )
     return str(rows.modified_count); 
 
 #remove card from column
